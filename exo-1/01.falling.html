@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Faire tomber des trucs JS</title>
+	<script type="text/javascript">
+
+	// fonction utilitaire qui retourne un nombre à partir d'une chaine
+	// exemple : '125px' -> 125
+	function extractPx(p) {
+		return parseInt(p.substring(0, p.length - 2));
+	}
+
+	// fonction utilitaire qui retourne une chaine en pixel à partir d'un nombre
+	// exemple : 125 -> '125px'
+	function createPx(p) {
+		return parseInt(p) + 'px';
+	}
+
+	// fonction utilitaire qui retourne un identifiant unique
+	var idDiv = 0;
+	function getDivId() {
+		idDiv++;
+		return "div" + idDiv;
+	}
+
+	// fonction qui retourne le z-index en fonction de l'ordre de création
+	function getZIndex() {
+		return idDiv;
+	}
+
+	// fonction utilitaire qui permet de stocker la position de la souris
+	var posX = '0px', posY = '0px';
+	function handleMouseMove(event) {
+		event = event || window.event; // IE-ism
+		posX = createPx(event.pageX);
+		posY = createPx(event.pageY);
+	}
+
+	// BONUS : faire une fonction qui change l'ordre des div (visuel)
+	// appeler cette fonction au bon endroit
+	function sortNoIdea() {
+	}
+
+	// fonction utilitaire qui retourne une couleur en hexadecimal
+	function chooseColor() {
+		return '#' + Math.floor(Math.random() * 16777215).toString(16);
+	}
+
+	// fonction utilitaire qui retourne une taille aléatoire entre 10px et 160px
+	function chooseSize() {
+		return (Math.floor(Math.random() * 150) + 10) + 'px';
+	}
+
+	// fonction utilitaire qui retourne une vitesse entre 1 et 11
+	function vitesse() {
+		return Math.floor(Math.random()*10) + 1;
+	}
+
+	var myDivs = []; // tableau de div
+	var maxDiv = 1000; // maximum d'élément affichés
+
+	// permet d'ajouter un élément
+	function addDiv() {
+		console.log('Log');
+
+		if (myDivs.length < maxDiv) {
+
+			let newDiv = document.createElement('div');
+			newDiv.id = getDivId();
+			newDiv.style.backgroundColor = chooseColor();
+			newDiv.vitesse = vitesse();
+			let size = chooseSize();
+			newDiv.style.height = newDiv.style.width = size;
+			newDiv.style.left = createPx(extractPx(posX)-extractPx(size)/2);
+			newDiv.style.top = createPx(extractPx(posY)-extractPx(size)/2);
+			console.log(posX, posY);
+			newDiv.style.zindex = getZIndex();
+			myDivs.push(newDiv);
+			document.getElementById("maindiv").append(newDiv);
+		};
+	}
+
+	// fonction qui permet de diminuer la position y des div
+	function fall() {
+		for (div in myDivs) {
+			if (screen.availHeight > extractPx(myDivs[div].style.top)) {
+				myDivs[div].style.top = createPx(extractPx(myDivs[div].style.top) + myDivs[div].vitesse);
+			} else {
+				myDivs[div].style.top = createPx(0-extractPx(myDivs[div].style.height));
+			}
+		}
+	}
+
+	// fonction d'initialisation
+	function init() {
+		var d = document.getElementById("maindiv");
+		d.addEventListener('mousemove', addDiv);
+		handleMouseMove();
+		d.addEventListener('mousemove', handleMouseMove);
+		window.setInterval(fall, 25);
+	}
+
+	// appel la fonction init apres le chargement de la page
+	window.addEventListener("load", init);
+
+	</script>
+
+	<style type="text/css">
+	body{
+		margin: 0;
+	}
+
+	#maindiv>div {
+		position: absolute;
+		display: block;
+		border-radius: 50%;
+	}
+
+	body,
+	#maindiv {
+		z-index: 9999;
+		width: 100vw;
+		height: 100vh;
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		background-color: grey;
+		overflow: hidden;
+	}
+	</style>
+</head>
+
+<body id="body">
+	<div id="maindiv"></div>
+</body>
+
+</html>
