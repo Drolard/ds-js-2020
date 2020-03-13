@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Faire tomber des trucs JS</title>
+  <script type="text/javascript">
+
+    // fonction d'initialisation
+    function init() {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          var json = JSON.parse(this.responseText);
+          json['records'].forEach(element => console.log(element['fields']['type_de_poste']+' Lon: '+element['fields']['position'][1]+' Lat: '+element['fields']['position'][0]));
+        }
+      };
+      xhttp.open("GET", "https://opendata.paris.fr/api/records/1.0/search/?dataset=postes-publics-des-bibliotheques", true);
+      xhttp.send();
+    }
+
+    // appel la fonction init apres le chargement de la page
+    window.addEventListener("load", init);
+
+  </script>
+
+  <style type="text/css">
+    body{
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body id="body">
+  <div id="maindiv"></div>
+</body>
+
+</html>
